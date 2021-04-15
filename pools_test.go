@@ -16,15 +16,16 @@ type expectSet struct {
 func TestParseGetAll(t *testing.T) {
 	assert := require.New(t)
 
-	poolInput := []byte(`NAME  PROPERTY  VALUE  SOURCE
+	poolInput := []byte(`NAME PROPERTY   VALUE     SOURCE
 foo  feature@d  disabled  local
 foo  feature@e  enabled   local
 foo  feature@a  active    local
+
 bar  feature@d  disabled  local
 bar  feature@e  enabled   local
 bar  feature@a  active    local`)
 
-	input := []byte(`NAME  PROPERTY  VALUE  SOURCE
+	input := []byte(`NAME         PROPERTY        VALUE       SOURCE
 foo          fizz            buzz        default
 foo          mounted         no          -
 foo/bar      buzz            fizz        -

@@ -8,6 +8,8 @@ import (
 	"regexp"
 	"sort"
 	"strings"
+
+	"github.com/josephvusich/go-zfs/zfscli"
 )
 
 type PropertyLocation int
@@ -289,44 +291,44 @@ func zpoolGetAllRaw() ([]byte, error) {
 func zpoolParse(b []byte) (map[string]map[string]*Property, error) {
 	poolProps := make(map[string]map[string]*Property)
 
-	lines := bytes.Split(b, []byte{'\n'})
-	if !header.Match(lines[0]) {
-		return nil, fmt.Errorf("unexpected header: %s", lines[0])
-	}
-	lines = lines[1:]
-
 	poolName := ""
-	for _, l := range lines {
-		l = bytes.TrimSpace(l)
-		if len(l) == 0 {
-			continue
+	if err := zfscli.ScanTable(b, func(i int, row []string) error {
+		if i == 0 {
+			if !header.MatchString(strings.Join(row, " ")) {
+				return fmt.Errorf("unexpected header: %s", row)
+			}
+			return nil
 		}
 
-		m := property.FindSubmatch(l)
-		if m == nil {
-			return nil, fmt.Errorf("unparseable input: %s", l)
+		if len(row) == 0 {
+			return nil
 		}
 
-		nextName := string(m[1])
+		nextName := row[0]
 		if nextName != poolName {
 			poolName = nextName
 			if _, ok := poolProps[poolName]; ok {
-				return nil, fmt.Errorf("duplicate zpool found: %s", poolName)
+				return fmt.Errorf("duplicate zpool found: %s", poolName)
 			}
 			poolProps[poolName] = make(map[string]*Property)
 		}
 
-		propName := string(m[2])
-		propSrc, err := parseZpoolSource(propName, string(m[4]))
+		propName := row[1]
+		propSrc, err := parseZpoolSource(propName, row[3])
 		if err != nil {
-			return nil, err
+			return err
 		}
 		poolProps[poolName][propName] = &Property{
 			Name:       propName,
-			localValue: string(m[3]),
+			localValue: row[2],
 			Source:     *propSrc,
 		}
+
+		return nil
+	}); err != nil {
+		return nil, err
 	}
+
 	return poolProps, nil
 }
 
