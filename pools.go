@@ -263,7 +263,7 @@ func parseSource(name string, value string, raw string, parent string, pool *Poo
 	case "inherited from ":
 		if parent, ok := pool.Datasets.Index[parent]; ok {
 			if prop, ok := parent.Properties[name]; ok {
-				if value != prop.Value() {
+				if !strings.HasPrefix(value, prop.Value()) {
 					return nil, fmt.Errorf("inherited property %s does not match value on parent %s: %s != %s", name, parent.Name, value, prop.Value())
 				}
 				return &PropertySource{
