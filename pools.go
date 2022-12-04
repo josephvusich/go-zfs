@@ -537,7 +537,7 @@ func (p *parser) parseDataset(pool *Pool) (*Dataset, error) {
 		}
 
 		setName := string(m[1])
-		if strings.ContainsRune(setName, '@') {
+		if strings.ContainsAny(setName, "@#") {
 			continue
 		}
 
