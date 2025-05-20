@@ -281,7 +281,7 @@ func parseSource(name string, value string, raw string, parent string, pool *Poo
 }
 
 func zfsGetAllRaw() ([]byte, error) {
-	return exec.Command(`zfs`, `get`, `all`).Output()
+	return exec.Command(`zfs`, `get`, `-t`, `filesystem,volume`, `all`).Output()
 }
 
 func zpoolGetAllRaw() ([]byte, error) {
