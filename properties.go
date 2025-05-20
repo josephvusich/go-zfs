@@ -1,6 +1,6 @@
 package zfs
 
-// Differentiate truly readonly status flags from onlyAtCreation flags
+// Differentiate truly readonly status flags from onlyAtCreation flags like "normalization"
 var statusProperties = map[string]struct{}{
 	"type":                 {},
 	"creation":             {},
@@ -38,6 +38,15 @@ var statusProperties = map[string]struct{}{
 	"fragmentation": {},
 	"leaked":        {},
 	"checkpoint":    {},
+
+	"createtxg":         {},
+	"guid":              {},
+	"objsetid":          {},
+	"bcloneratio":       {},
+	"bclonesaved":       {},
+	"bcloneused":        {},
+	"load_guid":         {},
+	"snapshots_changed": {},
 }
 
 // Properties that do not appear readonly, but should not be included in output
